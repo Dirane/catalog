@@ -152,7 +152,7 @@ def getUserID(email):
         return None
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
-
+# gdisconnect authentication and authorization course @udacity
 
 @app.route('/gdisconnect')
 def gdisconnect():
