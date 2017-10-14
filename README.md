@@ -24,3 +24,8 @@ The Flask application uses HTML files found in the tempaltes folder for the fron
 7. Type `python /catalog/catalogdb_data.py`
 8. Now type `python /catalog/application.py` to launch the application
 9. Finally open the link http://localhost:5000 to view the application
+
+## Credits and experience
+This has been a very challenging project for me implementing OAUTH and writing the application.py file in particular
+I give credit to an implementation which inspired my output, [Similar implementation](https://github.com/gmawji/item-catalog)
+
