@@ -27,5 +27,5 @@ The Flask application uses HTML files found in the tempaltes folder for the fron
 
 ## Credits and experience
 This has been a very challenging project for me implementing OAUTH and writing the application.py file in particular
-I give credit to an implementation which inspired my output, [Similar implementation](https://github.com/gmawji/item-catalog)
+I give credit to an implementation which inspired me so much, I drew inspiration from [Similar implementation](https://github.com/gmawji/item-catalog)
 

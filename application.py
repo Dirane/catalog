@@ -7,8 +7,8 @@ from catalogdb_setup import *
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import os, random, string, datetime, json, httplib2, requests
-# Import login_required from login_decorator.py
-from login_decorator import login_required
+# Import authentication_needed from login_auth.py
+from login_auth import authentication_needed
 
 # Instance of flask
 app = Flask(__name__)
@@ -241,9 +241,9 @@ def displayItem(category_name, item_name):
                                 created_by = created_by)
 
 # rout function to add a category and save in catalogdb
-@app.route('/catalog/addcategory', methods=['GET', 'POST'])
-@login_required
-def addCategory():
+@app.route('/catalog/add_category', methods=['GET', 'POST'])
+@authentication_needed
+def add_category():
     if request.method == 'POST':
         newCategory = Category(
             name=request.form['name'],
@@ -259,8 +259,8 @@ def addCategory():
 
 # Edit esisting category
 @app.route('/catalog/<path:category_name>/edit', methods=['GET', 'POST'])
-@login_required
-def editCategory(category_name):
+@authentication_needed
+def edit_category(category_name):
     editedCategory = session.query(Category).filter_by(name=category_name).one()
     category = session.query(Category).filter_by(name=category_name).one()
     # Check if the logged in is authorized or user is the owner of item
@@ -286,8 +286,8 @@ def editCategory(category_name):
 
 # Delete a category
 @app.route('/catalog/<path:category_name>/delete', methods=['GET', 'POST'])
-@login_required
-def deleteCategory(category_name):
+@authentication_needed
+def delete_category(category_name):
     categoryToDelete = session.query(Category).filter_by(name=category_name).one()
      # Check if the logged in is authorized or user is the owner of item
     created_by = getUserInfo(categoryToDelete.user_id)
@@ -307,8 +307,8 @@ def deleteCategory(category_name):
 
 # Add an item
 @app.route('/catalog/add', methods=['GET', 'POST'])
-@login_required
-def addItem():
+@authentication_needed
+def add_item():
     categories = session.query(Category).all()
     if request.method == 'POST':
         newItem = Items(
@@ -327,8 +327,8 @@ def addItem():
 
 # Edit an item
 @app.route('/catalog/<path:category_name>/<path:item_name>/edit', methods=['GET', 'POST'])
-@login_required
-def editItem(category_name, item_name):
+@authentication_needed
+def edit_item(category_name, item_name):
     editedItem = session.query(Items).filter_by(name=item_name).one()
     categories = session.query(Category).all()
     # See if the logged in user is the owner of item
@@ -361,8 +361,8 @@ def editItem(category_name, item_name):
 
 # Delete an item
 @app.route('/catalog/<path:category_name>/<path:item_name>/delete', methods=['GET', 'POST'])
-@login_required
-def deleteItem(category_name, item_name):
+@authentication_needed
+def delete_item(category_name, item_name):
     itemToDelete = session.query(Items).filter_by(name=item_name).one()
     category = session.query(Category).filter_by(name=category_name).one()
     categories = session.query(Category).all()

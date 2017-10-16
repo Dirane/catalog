@@ -31,8 +31,8 @@
       {% if 'username' not in session %}
       {% else %}
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('addItem')}}">Add Item</a></li>
-        <li><a href="{{url_for('addCategory')}}">Add Category</a></li>
+        <li><a href="{{url_for('add_item')}}">Add Item</a></li>
+        <li><a href="{{url_for('add_category')}}">Add Category</a></li>
       </ul>
       {% endif %}
     </div><!-- end .navbar-collapse-->

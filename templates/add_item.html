@@ -2,11 +2,11 @@
 {% include "nav.html" %}
 {% block content %}
 
-<section id="addItem" class="section">
+<section id="add_item" class="section">
     <div class="section-content container padding-1-5">
         <h1>Add Item</h1>
 
-        <form action="{{url_for('addItem')}}" method = "post" class="padding-top-10">
+        <form action="{{url_for('add_item')}}" method = "post" class="padding-top-10">
             <div class="form-group">
                 <label for="name">Item Name:</label>
                 <input type ="text" class="form-control" id="name" maxlength="250" name="name">
