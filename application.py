@@ -1,5 +1,6 @@
 # Imports
-from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, make_response
+from flask import Flask, render_template, url_for
+from flask import request, redirect, flash, jsonify, make_response
 from flask import session as login_session
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +8,6 @@ from catalogdb_setup import *
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import os, random, string, datetime, json, httplib2, requests
-# Import authentication_needed from login_auth.py
 from login_auth import authentication_needed
 
 # Instance of flask
@@ -16,7 +16,7 @@ app = Flask(__name__)
 # GConnect CLIENT_ID oauth course 12/10/2017
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Item-Catalog"
+APPLICATION_NAME = "Catalog App"
 
 # Database code
 # Connect to database
@@ -32,9 +32,11 @@ session = DBSession()
 @app.route('/login')
 def displayLogin():
     state = ''.join(
-        random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+        random.choice(string.ascii_uppercase + string.digits)
+	for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
+
 
 # GConnect
 @app.route('/gconnect', methods=['POST'])
@@ -188,7 +190,7 @@ def gdisconnect():
 # Flask Routing
 # Homepage
 @app.route('/')
-@app.route('/catalog/')
+@app.route('/index/')
 def displayCatalog():
     #Obtain items from db
     categories = session.query(Category).order_by(asc(Category.name))
@@ -198,7 +200,7 @@ def displayCatalog():
                             items = items)
 
 # Category Items from catalogdb
-@app.route('/catalog/<path:category_name>/items/')
+@app.route('/index/<path:category_name>/items/')
 def displayCategory(category_name):
     categories = session.query(Category).order_by(asc(Category.name))
     category = session.query(Category).filter_by(name=category_name).one()
@@ -222,7 +224,7 @@ def displayCategory(category_name):
                                 user=user)
 
 # Display a Specific Item from db
-@app.route('/catalog/<path:category_name>/<path:item_name>/')
+@app.route('/index/<path:category_name>/<path:item_name>/')
 def displayItem(category_name, item_name):
     item = session.query(Items).filter_by(name=item_name).one()
     created_by = getUserInfo(item.user_id)
@@ -241,7 +243,7 @@ def displayItem(category_name, item_name):
                                 created_by = created_by)
 
 # rout function to add a category and save in catalogdb
-@app.route('/catalog/add_category', methods=['GET', 'POST'])
+@app.route('/index/add_category', methods=['GET', 'POST'])
 @authentication_needed
 def add_category():
     if request.method == 'POST':
@@ -258,7 +260,7 @@ def add_category():
         return render_template('add_category.html')
 
 # Edit esisting category
-@app.route('/catalog/<path:category_name>/edit', methods=['GET', 'POST'])
+@app.route('/index/<path:category_name>/edit', methods=['GET', 'POST'])
 @authentication_needed
 def edit_category(category_name):
     editedCategory = session.query(Category).filter_by(name=category_name).one()
@@ -285,7 +287,7 @@ def edit_category(category_name):
                                 category = category)
 
 # Delete a category
-@app.route('/catalog/<path:category_name>/delete', methods=['GET', 'POST'])
+@app.route('/index/<path:category_name>/delete', methods=['GET', 'POST'])
 @authentication_needed
 def delete_category(category_name):
     categoryToDelete = session.query(Category).filter_by(name=category_name).one()
@@ -306,7 +308,7 @@ def delete_category(category_name):
                                 category=categoryToDelete)
 
 # Add an item
-@app.route('/catalog/add', methods=['GET', 'POST'])
+@app.route('/index/add', methods=['GET', 'POST'])
 @authentication_needed
 def add_item():
     categories = session.query(Category).all()
@@ -326,7 +328,7 @@ def add_item():
                                 categories=categories)
 
 # Edit an item
-@app.route('/catalog/<path:category_name>/<path:item_name>/edit', methods=['GET', 'POST'])
+@app.route('/index/<path:category_name>/<path:item_name>/edit', methods=['GET', 'POST'])
 @authentication_needed
 def edit_item(category_name, item_name):
     editedItem = session.query(Items).filter_by(name=item_name).one()
@@ -360,7 +362,7 @@ def edit_item(category_name, item_name):
                                 categories=categories)
 
 # Delete an item
-@app.route('/catalog/<path:category_name>/<path:item_name>/delete', methods=['GET', 'POST'])
+@app.route('/index/<path:category_name>/<path:item_name>/delete', methods=['GET', 'POST'])
 @authentication_needed
 def delete_item(category_name, item_name):
     itemToDelete = session.query(Items).filter_by(name=item_name).one()
@@ -385,7 +387,7 @@ def delete_item(category_name, item_name):
 
 
 # JSON
-@app.route('/catalog/JSON')
+@app.route('/index/JSON')
 def itemsJSON():
     categories = session.query(Category).all()
     category_dict = [c.serialize for c in categories]
@@ -401,18 +403,18 @@ def categoriesJSON():
     categories = session.query(Category).all()
     return jsonify(categories=[c.serialize for c in categories])
 
-@app.route('/catalog/items/JSON')
+@app.route('/index/items/JSON')
 def getItemsJSON():
     items = session.query(Items).all()
     return jsonify(items=[i.serialize for i in items])
 
-@app.route('/catalog/<path:category_name>/items/JSON')
+@app.route('/index/<path:category_name>/items/JSON')
 def categoryItemsJSON(category_name):
     category = session.query(Category).filter_by(name=category_name).one()
     items = session.query(Items).filter_by(category=category).all()
     return jsonify(items=[i.serialize for i in items])
 
-@app.route('/catalog/<path:category_name>/<path:item_name>/JSON')
+@app.route('/index/<path:category_name>/<path:item_name>/JSON')
 def ItemJSON(category_name, item_name):
     category = session.query(Category).filter_by(name=category_name).one()
     item = session.query(Items).filter_by(name=item_name,\
@@ -440,3 +442,4 @@ if __name__ == '__main__':
     app.secret_key = "secret key"
     app.debug = True
     app.run(host = '0.0.0.0', port = 5000)
+
